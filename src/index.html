@@ -1,0 +1,63 @@
+<html>
+
+<head>
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script script type="text/javascript">
+
+
+        google.load("visualization", "1", {packages:["corechart"]});
+        google.setOnLoadCallback(drawChart);
+
+        function drawChart() {
+
+            var date = new Date();
+            date.setHours(date.getHours() - 16);
+
+
+            $.ajax({
+                url: '/data',
+                cache: false
+            }).done(function(data) {
+
+                var values = [["Values", "Light"]];
+
+                for(var i = 0, l = data.length; i < l; i++) {
+
+                    var date = new Date(data[i].d.$date);
+                    values.push([date, data[i].t]);
+                }
+
+                var dataTable = google.visualization.arrayToDataTable(values);
+
+                var options = {
+                    title: 'Light Sensor',
+                    vAxis : {
+                        'title' : 'value'
+                    },
+                    hAxis : {
+                        'title' : 'time'
+                    }
+                };
+
+                var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+
+                google.visualization.events.addListener(chart, 'ready', function() {
+
+                    document.getElementById('loading').innerHTML = '';
+                });
+
+                chart.draw(dataTable, options);
+            });
+        }
+
+    </script>
+</head>
+
+<body>
+
+<div id="loading">Loading ...</div>
+<div id="chart_div" style="width: 1200px; height: 500px;"></div>
+
+</body>
+</html>
